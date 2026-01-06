@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fazhon+ Clothing App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e3a8a; /* Deep blue background */
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* App container without phone outline */
+        .app-container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #f0f8ff; /* Light blue interior */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header with animated gradient text */
+        .app-header {
+            background-color: #1e40af; /* Blue header */
+            padding: 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3b82f6;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-name {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #60a5fa, #93c5fd, #bfdbfe, #dbeafe, #eff6ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: slideColor 8s ease infinite;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes slideColor {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #eff6ff;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background-color: #1e3a8a;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            padding-top: 100px;
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-menu.active {
+            left: 0;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
+        .menu-items {
+            list-style: none;
+        }
+
+        .menu-items li {
+            padding: 18px 25px;
+            border-bottom: 1px solid #3b82f6;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s, padding-left 0.2s;
+            color: #eff6ff;
+        }
+
+        .menu-items li:hover {
+            background-color: #3b82f6;
+            padding-left: 30px;
+        }
+
+        .menu-items li i {
+            margin-right: 15px;
+            color: #bfdbfe;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 20px;
+            padding-bottom: 90px;
+            background-color: #f0f8ff;
+        }
+
+        .welcome-text {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #1e40af;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 25px 0 20px 0;
+            color: #1e3a8a;
+            border-left: 4px solid #3b82f6;
+            padding-left: 12px;
+        }
+
+        /* Category panels - Improved alignment */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .category-panel {
+            background-color: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #dbeafe;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .category-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.25);
+        }
+
+        .category-image-container {
+            height: 140px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc;
+        }
+
+        .category-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .category-panel:hover .category-image {
+            transform: scale(1.05);
+        }
+
+        .category-name {
+            padding: 16px 12px;
+            font-weight: 700;
+            text-align: center;
+            color: #1e3a8a;
+            background-color: #eff6ff;
+            font-size: 15px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Featured items - Improved alignment */
+        .featured-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .item-card {
+            background-color: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
+            border: 1px solid #dbeafe;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .item-card:hover {
+            transform: scale(1.03);
+        }
+
+        .item-image-container {
+            height: 170px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .item-card:hover .item-image {
+            transform: scale(1.05);
+        }
+
+        .item-details {
+            padding: 16px 12px;
+            background-color: #eff6ff;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #1e3a8a;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            font-weight: 800;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1e40af;
+            display: flex;
+            justify-content: space-around;
+            padding: 18px 0;
+            border-top: 1px solid #3b82f6;
+            z-index: 100;
+            max-width: 375px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #93c5fd;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+            transform: translateY(-3px);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Blue accent elements */
+        .blue-accent {
+            color: #3b82f6;
+        }
+
+        /* Status bar simulation */
+        .status-bar {
+            height: 30px;
+            background-color: #1e3a8a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: #eff6ff;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-bar i {
+            margin: 0 3px;
+        }
+
+        /* Search bar */
+        .search-bar {
+            background-color: #fff;
+            border-radius: 25px;
+            padding: 12px 20px;
+            margin: 15px 20px 5px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.1);
+        }
+
+        .search-bar i {
+            color: #64748b;
+            margin-right: 10px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            color: #1e3a8a;
+            background: transparent;
+        }
+
+        .search-bar input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .app-container {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .bottom-nav {
+                max-width: 100%;
+            }
+        }
+
+        /* Decorative blue elements */
+        .blue-circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
+            z-index: 0;
+        }
+
+        .circle-1 {
+            top: -80px;
+            right: -80px;
+        }
+
+        .circle-2 {
+            bottom: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, rgba(96, 165, 250, 0) 70%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorative background elements -->
+    <div class="blue-circle circle-1"></div>
+    <div class="blue-circle circle-2"></div>
+    
+    <div class="app-container">
+        <!-- Status bar (iPhone simulation) -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <!-- App Header -->
+        <header class="app-header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="app-name">FAZHON+</div>
+            <button class="menu-toggle" id="searchToggle">
+                <i class="fas fa-search"></i>
+            </button>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search for clothing, brands, and more...">
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu" id="sidebarMenu">
+            <ul class="menu-items">
+                <li><i class="fas fa-home"></i> Home</li>
+                <li><i class="fas fa-tshirt"></i> New Arrivals</li>
+                <li><i class="fas fa-fire"></i> Trending</li>
+                <li><i class="fas fa-shopping-bag"></i> My Orders</li>
+                <li><i class="fas fa-heart"></i> Wishlist</li>
+                <li><i class="fas fa-user"></i> Profile</li>
+                <li><i class="fas fa-cog"></i> Settings</li>
+                <li><i class="fas fa-question-circle"></i> Help & Support</li>
+                <li><i class="fas fa-sign-out-alt"></i> Sign Out</li>
+            </ul>
+        </div>
+        
+        <!-- Overlay for menu -->
+        <div class="menu-overlay" id="menuOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <p class="welcome-text">Welcome back! Discover the latest fashion trends curated just for you.</p>
+            
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="categories">
+                <!-- Men's Wear - Using proper men's clothing image -->
+                <div class="category-panel">
+                    <div class="category-image-container">
+                        <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Men's Clothing" class="category-image">
+                    </div>
+                    <div class="category-name">Men's Wear</div>
+                </div>
+                
+                <!-- Women's Wear - Using proper women's clothing image -->
+                <div class="category-panel">
+                    <div class="category-image-container">
+                        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Women's Clothing" class="category-image">
+                    </div>
+                    <div class="category-name">Women's Wear</div>
+                </div>
+                
+                <!-- Kids Collection - Using proper kids clothing image -->
+                <div class="category-panel">
+                    <div class="category-image-container">
+                        <img src="https://images.unsplash.com/photo-1522771930-78848d9293e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Kids Clothing" class="category-image">
+                    </div>
+                    <div class="category-name">Kids Collection</div>
+                </div>
+                
+                <!-- Accessories - Using proper accessories image -->
+                <div class="category-panel">
+                    <div class="category-image-container">
+                        <img src="https://images.unsplash.com/photo-1590649887896-6c8e6668407f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Accessories" class="category-image">
+                    </div>
+                    <div class="category-name">Accessories</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Featured Today</h2>
+            <div class="featured-items">
+                <!-- Men's casual shirt -->
+                <div class="item-card">
+                    <div class="item-image-container">
+                        <img src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Casual Shirt" class="item-image">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Men's Casual Summer Shirt</div>
+                        <div class="item-price">$49.99</div>
+                    </div>
+                </div>
+                
+                <!-- Women's party dress -->
+                <div class="item-card">
+                    <div class="item-image-container">
+                        <img src="https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Designer Dress" class="item-image">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Women's Evening Party Dress</div>
+                        <div class="item-price">$89.99</div>
+                    </div>
+                </div>
+                
+                <!-- Denim jacket -->
+                <div class="item-card">
+                    <div class="item-image-container">
+                        <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Denim Jacket" class="item-image">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Classic Denim Jacket</div>
+                        <div class="item-price">$75.50</div>
+                    </div>
+                </div>
+                
+                <!-- Sportswear -->
+                <div class="item-card">
+                    <div class="item-image-container">
+                        <img src="https://images.unsplash.com/photo-1544441893-675973e31985?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Sportswear" class="item-image">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Active Sportswear Set</div>
+                        <div class="item-price">$64.99</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Search</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Cart</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-heart"></i>
+                <span>Saved</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Toggle sidebar menu
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebarMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        });
+        
+        menuOverlay.addEventListener('click', () => {
+            sidebarMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        });
+        
+        // Set active nav item
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        // Set active menu item
+        const menuItems = document.querySelectorAll('.menu-items li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                menuItems.forEach(menu => {
+                    menu.style.backgroundColor = '';
+                    menu.style.paddingLeft = '25px';
+                });
+                item.style.backgroundColor = '#3b82f6';
+                item.style.paddingLeft = '30px';
+                
+                // Close menu after selection on mobile
+                if (window.innerWidth <= 768) {
+                    sidebarMenu.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                }
+            });
+        });
+        
+        // Make category panels clickable
+        const categoryPanels = document.querySelectorAll('.category-panel');
+        categoryPanels.forEach(panel => {
+            panel.addEventListener('click', () => {
+                const categoryName = panel.querySelector('.category-name').textContent;
+                alert(`Opening ${categoryName} category`);
+            });
+        });
+        
+        // Make item cards clickable
+        const itemCards = document.querySelectorAll('.item-card');
+        itemCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const itemName = card.querySelector('.item-name').textContent;
+                const itemPrice = card.querySelector('.item-price').textContent;
+                alert(`Added ${itemName} (${itemPrice}) to cart`);
+            });
+        });
+
+        // Update time in status bar
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = `${hours}:${minutes}`;
+            
+            const timeElement = document.querySelector('.status-bar div:first-child');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        // Update time every minute
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Search functionality
+        const searchToggle = document.getElementById('searchToggle');
+        const searchInput = document.querySelector('.search-bar input');
+        
+        searchToggle.addEventListener('click', () => {
+            searchInput.focus();
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (searchInput.value.trim() !== '') {
+                    alert(`Searching for: ${searchInput.value}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
